@@ -73,3 +73,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Automatically create the media directory on the server if it doesn't exist
+if not os.path.exists(MEDIA_ROOT):
+    os.makedirs(MEDIA_ROOT)
+
+   # Increase maximum request payload size (e.g., 100MB)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
+
+# Increase maximum files allowed in a single request
+DATA_UPLOAD_MAX_NUMBER_FILES = 20 
