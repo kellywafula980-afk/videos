@@ -20,6 +20,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # <-- ADD THIS EXACT LINE HERE
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,3 +90,4 @@ FILE_UPLOAD_HANDLERS = [
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB Limit
 DATA_UPLOAD_MAX_NUMBER_FILES = 100
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
