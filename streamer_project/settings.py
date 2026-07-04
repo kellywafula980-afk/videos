@@ -48,12 +48,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'streamer_project.wsgi.application'
 
-# Dynamic Database Connection Setup
+# Direct Database Connection
 DATABASES = {
-    'default': dj_database_url.config(
-        default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'streamer_db_r5ej',
+        'USER': 'streamer_db_r5ej_user',
+        'PASSWORD': 'Ns7sHyCcgGLjZ5iLBxcjbOOunGlWng1D',
+        'HOST': 'dpg-d94kiu28qa3s73ctb3og-a.oregon-postgres.render.com', # Standard Render external host conversion
+        'PORT': '5432',
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [
