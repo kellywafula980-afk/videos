@@ -2,149 +2,299 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Upload Multiple Videos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Videos - Django Streamer</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #000000; color: #ffffff; }
-        .container { max-width: 700px; margin: auto; background: #121212; padding: 30px; border-radius: 8px; border: 1px solid #222; }
-        h1 { text-align: center; margin-bottom: 20px; }
-        
-        /* Dropzone Box style */
-        .dropzone { border: 2px dashed #444; padding: 40px; text-align: center; background: #0a0a0a; border-radius: 6px; cursor: pointer; transition: border-color 0.2s; }
-        .dropzone.dragover { border-color: #007bff; background: #111; }
-        .dropzone p { margin: 0; font-size: 1.1em; color: #aaa; }
-        
-        #file-input { display: none; }
-        
-        /* File staging items */
-        .file-list { margin-top: 20px; }
-        .file-item { background: #1e1e1e; padding: 12px; margin-bottom: 8px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #333; }
-        .file-name { font-weight: bold; color: #fff; }
-        .auto-title { font-size: 0.85em; color: #007bff; block-size: auto; }
-        
-        .upload-actions { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .btn { padding: 10px 20px; border-radius: 4px; border: none; font-weight: bold; cursor: pointer; text-decoration: none; }
-        .btn-submit { background: #28a745; color: white; }
-        .btn-submit:hover { background: #218838; }
-        .btn-cancel { background: #444; color: white; }
-        .status-msg { margin-top: 15px; text-align: center; font-weight: bold; }
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #00adb5;
+            --text-color: #eeeeee;
+            --text-muted: #888888;
+            --border-color: #333333;
+            --success-color: #393e46;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .upload-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            width: 100%;
+            max-width: 550px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        /* Drag & Drop Styled File Input Wrapper */
+        .file-drop-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 40px 20px;
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            background-color: rgba(0, 173, 181, 0.03);
+            text-align: center;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+
+        .file-drop-area:hover {
+            background-color: rgba(0, 173, 181, 0.08);
+        }
+
+        .file-drop-area input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 40px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .file-msg {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .file-limits {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* Action Buttons */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button, .btn-secondary {
+            flex: 1;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        button[type="submit"] {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #008c95;
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        /* Dynamic Progress Bar Section */
+        .progress-container {
+            display: none;
+            margin-top: 25px;
+            background: #252525;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            height: 24px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        #file-list-preview {
+            margin-top: 15px;
+            font-size: 13px;
+            color: var(--accent-color);
+            max-height: 100px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 0 10px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Power Multi-Video Upload</h1>
-    
-    <div class="dropzone" id="dropzone">
-        <p>Drag & drop multiple video files here or <strong>click to browse</strong></p>
-        <input type="file" id="file-input" multiple accept="video/mp4">
-    </div>
+<div class="upload-container">
+    <h1>Upload Multiple Videos</h1>
+    <p class="subtitle">Select one or more MP4 files to add to your stream library</p>
 
-    <div class="file-list" id="file-list"></div>
+    <form id="upload-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <div class="file-drop-area">
+                <span class="upload-icon">📁</span>
+                <span class="file-msg">Click or drag videos here</span>
+                <span class="file-limits">Supports multiple MP4 videos</span>
+                <input type="file" name="video_files" id="video-input" accept="video/mp4" multiple required>
+            </div>
+            <div id="file-list-preview"></div>
+        </div>
 
-    <div class="upload-actions">
-        <a href="{% url 'videos:video_list' %}" class="btn btn-cancel">← Back to Gallery</a>
-        <button class="btn btn-submit" id="upload-btn" style="display: none;">Start Uploading</button>
-    </div>
+        <div class="progress-container" id="progress-wrapper">
+            <div class="progress-bar" id="upload-progress"></div>
+            <div class="progress-text" id="progress-label">0%</div>
+        </div>
 
-    <div class="status-msg" id="status-msg"></div>
+        <div class="btn-container">
+            <a href="{% url 'videos:video_list' %}" class="btn-secondary">Cancel</a>
+            <button type="submit" id="submit-btn">Upload Videos</button>
+        </div>
+    </form>
 </div>
 
 <script>
-    const dropzone = document.getElementById('dropzone');
-    const fileInput = document.getElementById('file-input');
-    const fileList = document.getElementById('file-list');
-    const uploadBtn = document.getElementById('upload-btn');
-    const statusMsg = document.getElementById('status-msg');
-    
-    let stagedFiles = [];
+    const fileInput = document.getElementById('video-input');
+    const filePreview = document.getElementById('file-list-preview');
+    const form = document.getElementById('upload-form');
+    const progressWrapper = document.getElementById('progress-wrapper');
+    const progressBar = document.getElementById('upload-progress');
+    const progressLabel = document.getElementById('progress-label');
+    const submitBtn = document.getElementById('submit-btn');
 
-    // Trigger file selection window
-    dropzone.addEventListener('click', () => fileInput.click());
+    // UI Feedback: Show names of selected files
+    fileInput.addEventListener('change', function() {
+        const files = fileInput.files;
+        if (files.length > 0) {
+            let names = [];
+            for (let i = 0; i < files.length; i++) {
+                names.push(`• ${files[i].name} (${(files[i].size / (1024 * 1024)).toFixed(2)} MB)`);
+            }
+            filePreview.innerHTML = names.join('<br>');
+        } else {
+            filePreview.innerHTML = '';
+        }
+    });
 
-    // Handle drag events
-    dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-    dropzone.addEventListener('drop', (e) => {
+    // Handle form submission asynchronously via AJAX to prevent proxy timeout dropouts
+    form.addEventListener('submit', function(e) {
         e.preventDefault();
-        dropzone.classList.remove('dragover');
-        handleFiles(e.dataTransfer.files);
-    });
-
-    // Handle standard browse selection
-    fileInput.addEventListener('change', (e) => handleFiles(e.target.files));
-
-    function handleFiles(files) {
-        for (let file of files) {
-            if (file.type.startsWith('video/')) {
-                stagedFiles.push(file);
-            }
-        }
-        renderStagedFiles();
-    }
-
-    function renderStagedFiles() {
-        fileList.innerHTML = '';
-        if (stagedFiles.length === 0) {
-            uploadBtn.style.display = 'none';
-            return;
-        }
-
-        stagedFiles.forEach((file, index) => {
-            // Replicate the backend filename extraction inside frontend preview
-            let baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-            let autoTitle = baseName.replace(/[_-]/g, ' ');
-
-            const div = document.createElement('div');
-            div.className = 'file-item';
-            div.innerHTML = `
-                <div>
-                    <div class="file-name">${file.name}</div>
-                    <div class="auto-title">Auto-assigned title: "<strong>${autoTitle}</strong>"</div>
-                </div>
-                <span style="color: #aaa; font-size: 0.9em;">Ready</span>
-            `;
-            fileList.appendChild(div);
-        });
         
-        uploadBtn.style.display = 'block';
-    }
+        // Disable submission triggers during active operation
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Uploading...";
+        progressWrapper.style.display = 'block';
 
-    // Handle AJAX bulk file submission
-    uploadBtn.addEventListener('click', () => {
-        if (stagedFiles.length === 0) return;
+        const formData = new FormData(form);
+        const xhr = new XMLHttpRequest();
 
-        const formData = new FormData();
-        stagedFiles.forEach(file => {
-            formData.append('files', file);
-        });
+        // Target identical URL endpoint handling standard POST
+        xhr.open('POST', form.action || window.location.href, true);
 
-        uploadBtn.disabled = true;
-        statusMsg.style.color = '#007bff';
-        statusMsg.innerText = 'Uploading files. Please wait...';
-
-        fetch("{% url 'videos:upload_videos' %}", {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                statusMsg.style.color = '#28a745';
-                statusMsg.innerText = `Success! ${data.videos.length} videos processed successfully.`;
-                stagedFiles = [];
-                setTimeout(() => {
-                    window.location.href = "{% url 'videos:video_list' %}";
-                }, 1500);
-            } else {
-                throw new Error('Upload failed');
+        // Update progress bar percentage values
+        xhr.upload.addEventListener('progress', function(e) {
+            if (e.lengthComputable) {
+                const percentComplete = Math.round((e.loaded / e.total) * 100);
+                progressBar.style.width = percentComplete + '%';
+                progressLabel.innerText = percentComplete + '%';
+                
+                if(percentComplete === 100) {
+                    progressLabel.innerText = "Processing files on server... Please wait.";
+                }
             }
-        })
-        .catch(err => {
-            uploadBtn.disabled = false;
-            statusMsg.style.color = '#e50914';
-            statusMsg.innerText = 'An error occurred during multi-upload submission.';
         });
+
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Success redirect back to list layout
+                window.location.href = "{% url 'videos:video_list' %}";
+            } else {
+                alert("An error occurred during multi-upload submission. Render tier may have limited the file size payload.");
+                resetForm();
+            }
+        };
+
+        xhr.onerror = function() {
+            alert("Network connection broken during file processing transfer.");
+            resetForm();
+        };
+
+        xhr.send(formData);
     });
+
+    function resetForm() {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Upload Videos";
+        progressWrapper.style.display = 'none';
+        progressBar.style.width = '0%';
+        progressLabel.innerText = '0%';
+    }
 </script>
+
 </body>
 </html>

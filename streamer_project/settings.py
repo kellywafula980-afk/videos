@@ -86,4 +86,4 @@ if not os.path.exists(MEDIA_ROOT):
 DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
 
 # Increase maximum files allowed in a single request
-DATA_UPLOAD_MAX_NUMBER_FILES = 20 
+DATA_UPLOAD_MAX_NUMBER_FILES = 100
