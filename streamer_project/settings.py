@@ -4,8 +4,8 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'django-insecure-your-secret-key-here'
-DEBUG = True
+SECRET_KEY = 'django-insecure-production-ready-streamer-key'
+DEBUG = True  # Set to False in real production environments
 ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
@@ -48,7 +48,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'streamer_project.wsgi.application'
 
-# Dynamic Database Setup (Checks for DATABASE_URL environment variable, falls back to local SQLite)
+# Dynamic Database Connection Setup
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
@@ -74,16 +74,14 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-# Automatically create the media directory on the server if it doesn't exist
+# Render-Optimized Performance Configurations
 if not os.path.exists(MEDIA_ROOT):
     os.makedirs(MEDIA_ROOT)
 
-   # Increase maximum request payload size (e.g., 100MB)
-DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
+# Protect the 512MB RAM ceiling by forcing uploads straight to disk chunk storage
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
 
-# Increase maximum files allowed in a single request
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB Limit
 DATA_UPLOAD_MAX_NUMBER_FILES = 100
