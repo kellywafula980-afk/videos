@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ video.title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #000000; color: #ffffff; text-align: center; }
+        .container { max-width: 800px; margin: auto; background: #121212; padding: 20px; border-radius: 8px; border: 1px solid #222; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        h1 { color: #ffffff; }
+        p { color: #aaaaaa; }
+        video { width: 100%; border-radius: 4px; background: #000; outline: none; border: 1px solid #333; }
+        .back-link { display: inline-block; margin-top: 20px; color: #e50914; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ video.title }}</h1>
+        
+        <video controls controlsList="nodownload">
+            <source src="{% url 'videos:stream_video' video.pk %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        
+        <br>
+        <a class="back-link" href="{% url 'videos:video_list' %}">← Back to List</a>
+    </div>
+</body>
+</html>

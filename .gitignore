@@ -1,0 +1,17 @@
+# Virtual Environment
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+# Local Databases
+db.sqlite3
+
+# Media and Uploads (Keep the directory structure but ignore the actual video files)
+media/*
+!media/.gitkeep
+
+# OS specific files
+.DS_Store
+Thumbs.db
